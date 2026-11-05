@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>華固上文林 - 材料進場申請表 (1:1原圖復刻版)</title>
+    <!-- 引入轉圖片與手寫簽名套件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <style>
+        :root { 
+            --primary: #0f5c4b; 
+            --cell-bg: #d5e6e1; 
+            --border-color: #333333;
+        }
+        body { font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; background: #f0f3f5; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 620px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 10px; font-size: 20px; }
+        
+        .rule-alert { background: #eafaf1; color: #0f5c4b; padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; border-left: 4px solid var(--primary); line-height: 1.5; }
+        .form-group { margin-bottom: 12px; }
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input[type="text"], input[type="date"], input[type="tel"], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
+        input[readonly] { background-color: #e9ecef; color: #495057; font-weight: bold; cursor: not-allowed; }
+        
+        .time-box { background: #f4f9f8; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #c8dfd9; }
+        .item-box { background: #f8f9fa; border: 1px solid #e9ecef; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: relative; }
+        .item-box h4 { margin: 0 0 8px 0; font-size: 14px; color: var(--primary); }
+        .remove-btn { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; cursor: pointer; font-size: 12px; }
+        
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; margin-top: 10px; }
+        .btn-add { background: #ecf0f1; color: #2c3e50; border: 1px dashed #bdc3c7; }
+        .btn-primary { background: var(--primary); color: white; margin-top: 20px; font-size: 18px; box-shadow: 0 3px 6px rgba(15,92,75,0.3); }
+        
+        .sig-container { border: 2px dashed #ccc; border-radius: 6px; background: #fafafa; text-align: center; position: relative; }
+        canvas#sig-canvas { width: 100%; height: 140px; touch-action: none; }
+        .clear-sig { position: absolute; bottom: 8px; right: 8px; background: #7f8c8d; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+
+        .preview-header { margin-top: 25px; border-top: 2px solid #eee; padding-top: 15px; margin-bottom: 10px; font-weight: bold; font-size: 15px; color: var(--primary); }
+
+        /* =========================================================
+           1:1 原圖像素級復刻版面 (鎖定 800 x 1131 px 標準 A4 比例)
+           ========================================================= */
+        #preview-scroll { width: 100%; overflow-x: auto; background: #666; padding: 10px; box-sizing: border-box; border-radius: 6px; }
+        #print-area {
+            width: 800px;
+            height: 1131px;
+            background: #ffffff;
+            margin: 0 auto;
+            padding: 38px 38px 30px 38px;
+            box-sizing: border-box;
+            font-family: "Microsoft JhengHei", "PingFang TC", "Heiti TC", sans-serif;
+            color: #000;
+            position: relative;
+        }
+        /* 頂部標題與深綠色橫條 */
+        .p-top-title {
+            text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        .p-green-bar {
+            width: 100%;
+            height: 25px;
+            background-color: #0f5c4b;
+            margin-bottom: 12px;
+        }
+        .p-mid-title {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .p-sub-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f5c4b;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .p-rule-line {
+            font-size: 13.5px;
+            color: #111;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        /* 表格共用設定 */
+        table.orig-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            border: 1px solid var(--border-color);
+        }
+        table.orig-table td, table.orig-table th {
+            border: 1px solid var(--border-color);
+            padding: 0 8px;
+            vertical-align: middle;
+            box-sizing: border-box;
+            font-size: 13.5px;
+            color: #000;
+        }
+        /* 淺灰綠標題格 */
+        .bg-green-cell {
+            background-color: var(--cell-bg);
+            font-weight: bold;
+            text-align: left;
+            padding-left: 8px !important;
+        }
+        .bg-green-center {
+            background-color: var(--cell-bg);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* 填寫內容字體 */
+        .fill-val {
+            font-weight: 600;
+            font-size: 14px;
+            color: #000;
+        }
+
+        /* 上半部 4 列高度 (精準對應原圖 26px) */
+        .top-row td {
+            height: 26px;
+        }
+
+        /* 材料清單表頭高度 (36px) 與 6 列資料列高度 (26px) */
+        .mat-header-row th {
+            height: 36px;
+            background-color: var(--cell-bg);
+            font-weight: bold;
+            text-align: center;
+        }
+        .mat-data-row td {
+            height: 26px;
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+
+        /* 獨立的底部管理中心審查表 (與上方間隔 48px) */
+        .review-table {
+            margin-top: 48px;
+        }
+        .review-header-row td {
+            height: 35px;
+            background-color: var(--cell-bg);
+            text-align: center;
+        }
+        .review-body-row td {
+            height: 56px;
+        }
+
+        /* 方形勾選框 */
+        .sq-box {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border: 1px solid #333;
+            vertical-align: middle;
+            margin-right: 3px;
+            margin-bottom: 2px;
+            position: relative;
+        }
+        .sq-box.checked::after {
+            content: "✔";
+            position: absolute;
+            top: -5px;
+            left: 0px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* 底部頁碼 22 */
+        .p-page-num {
+            position: absolute;
+            bottom: 24px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 13.5px;
+            color: #222;
+        }
+
+        /* 彈出圖片結果視窗 */
+        #result-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.88); z-index: 999; overflow-y: auto; padding: 20px; box-sizing: border-box; text-align: center; }
+        #result-modal img { max-width: 100%; height: auto; border: 2px solid #fff; border-radius: 4px; }
+        .modal-tip { color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 12px; background: #e67e22; display: inline-block; padding: 6px 15px; border-radius: 20px; }
+        .close-modal { background: #e74c3c; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 6px; margin-top: 15px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>『 華固上文林 』材料進場申請</h2>
+
+    <div class="rule-alert">
+        ⚠️ <b>規定提醒：</b>進料至少<b>提前三日</b>申請；進出時間限<b>週一至週五 09:00-12:00、13:00-17:00</b>，假日全面禁止進料。
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>申請日期</label>
+            <input type="date" id="applyDate" onchange="renderPreview()">
+        </div>
+        <div class="form-group">
+            <label>進料日期</label>
+            <input type="date" id="entryDate" onchange="checkEntryDate(); renderPreview();">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>棟別 (固定)</label>
+            <input type="text" id="building" value="A1" readonly>
+        </div>
+        <div class="form-group">
+            <label>樓層 (固定)</label>
+            <input type="text" id="floor" value="2" readonly>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>施工廠商</label>
+        <input type="text" id="contractor" value="協同作用" oninput="renderPreview()">
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>現場監工</label>
+            <select id="supervisorSelect" onchange="updateSupervisor(); renderPreview();">
+                <option value="林威守" data-phone="0913698855" selected>林威守</option>
+                <option value="custom">其他 (手動輸入)</option>
+            </select>
+            <input type="text" id="supervisorCustom" placeholder="請輸入監工姓名" style="display:none; margin-top: 8px;" oninput="renderPreview()">
+        </div>
+        <div class="form-group">
+            <label>聯絡電話</label>
+            <input type="tel" id="phone" value="0913698855" oninput="renderPreview()">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>車號 / 車種</label>
+        <input type="text" id="vehicle" placeholder="例: ABC-1234 / 3.5噸貨車" oninput="renderPreview()">
+    </div>
+
+    <!-- 預計時段 (半小時為單位，嚴格限制於規定時間內) -->
+    <div class="time-box">
+        <label style="color: var(--primary); margin-bottom: 8px;">🕒 預計進料時段（以半小時為單位，限規定時間內）</label>
+        <div class="form-row">
+            <div class="form-group">
+                <label style="font-size:13px;">時段區間</label>
+                <select id="periodType" onchange="updateTimeOptions()">
+                    <option value="AM">上午 (09:00 - 12:00)</option>
+                    <option value="PM">下午 (13:00 - 17:00)</option>
+                    <option value="FULL">上午+下午 (避開12-13點午休)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label style="font-size:13px;">開始時間</label>
+                <select id="startTime" onchange="updateEndTimeOptions()"></select>
+            </div>
+            <div class="form-group">
+                <label style="font-size:13px;">結束時間</label>
+                <select id="endTime" onchange="renderPreview()"></select>
+            </div>
+        </div>
+    </div>
+
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+    <label style="font-size: 16px; color: var(--primary);">📦 材料 / 機具清單 (原圖標準為 6 列)</label>
+    <div id="items-container"></div>
+    <button type="button" class="btn btn-add" onclick="addItem()">＋ 新增一項材料/機具</button>
+
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+    <div class="form-group">
+        <label>✍️ 申請人簽名 (請在下方框內手寫簽名)</label>
+        <div class="sig-container">
+            <canvas id="sig-canvas"></canvas>
+            <button type="button" class="clear-sig" onclick="clearSig()">重簽</button>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="generateImage()">📸 產生申請單圖片 (傳送至 LINE)</button>
+
+    <div class="preview-header">👀 1:1 原圖比例與配色即時預覽：</div>
+
+    <div id="preview-scroll">
+        <!-- 1:1 復刻原圖 A4 畫布 -->
+        <div id="print-area">
+            <div class="p-top-title">『華固上文林』裝潢(修)施工管理辦法』</div>
+            <div class="p-green-bar"></div>
+            <div class="p-mid-title">『華固上文林』室內裝修管理辦法</div>
+            <div class="p-sub-title">【附表一】 材料進場申請表</div>
+            <div class="p-rule-line">進料至少提前三日申請；進出時間限週一至週五 09:00-12:00、13:00-17:00，假日全面禁止進料。</div>
+
+            <!-- 第一部分：上半部基本資料表 (4列，欄寬比 14.8% : 35.2% : 14.8% : 35.2%) -->
+            <table class="orig-table">
+                <colgroup>
+                    <col style="width: 14.8%;">
+                    <col style="width: 35.2%;">
+                    <col style="width: 14.8%;">
+                    <col style="width: 35.2%;">
+                </colgroup>
+                <tr class="top-row">
+                    <td class="bg-green-cell">申請日期</td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span class="fill-val" style="width:48px; text-align:center;" id="p-ay"></span><span>年</span>
+                            <span class="fill-val" style="width:32px; text-align:center;" id="p-am"></span><span>月</span>
+                            <span class="fill-val" style="width:32px; text-align:center;" id="p-ad"></span><span>日</span>
+                        </div>
+                    </td>
+                    <td class="bg-green-cell">進料日期</td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span class="fill-val" style="width:48px; text-align:center;" id="p-ey"></span><span>年</span>
+                            <span class="fill-val" style="width:32px; text-align:center;" id="p-em"></span><span>月</span>
+                            <span class="fill-val" style="width:32px; text-align:center;" id="p-ed"></span><span>日</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="top-row">
+                    <td class="bg-green-cell">戶號</td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span class="fill-val" style="width:58px; text-align:center;" id="p-building">A1</span><span>棟</span>
+                            <span class="fill-val" style="width:52px; text-align:center;" id="p-floor">2</span><span>樓</span>
+                        </div>
+                    </td>
+                    <td class="bg-green-cell">施工廠商</td>
+                    <td class="fill-val" id="p-contractor">協同作用</td>
+                </tr>
+                <tr class="top-row">
+                    <td class="bg-green-cell">現場監工</td>
+                    <td class="fill-val" id="p-supervisor">林威守</td>
+                    <td class="bg-green-cell">聯絡電話</td>
+                    <td class="fill-val" id="p-phone">0913698855</td>
+                </tr>
+                <tr class="top-row">
+                    <td class="bg-green-cell">車號／車種</td>
+                    <td class="fill-val" id="p-vehicle"></td>
+                    <td class="bg-green-cell">預計時段</td>
+                    <td>
+                        <span id="p-chk-am" class="sq-box"></span><span style="margin-right:12px;">上午</span>
+                        <span id="p-chk-pm" class="sq-box"></span><span>下午</span>
+                        <span id="p-time-range" class="fill-val" style="margin-left:8px; font-size:13px;"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- 第二部分：材料清單表 (與上表無縫連接，欄寬比 37.7% : 16.3% : 27.0% : 19.0%) -->
+            <table class="orig-table" style="border-top: none;">
+                <colgroup>
+                    <col style="width: 37.7%;">
+                    <col style="width: 16.3%;">
+                    <col style="width: 27.0%;">
+                    <col style="width: 19.0%;">
+                </colgroup>
+                <thead>
+                    <tr class="mat-header-row">
+                        <th style="border-top:none;">材料／機具名稱</th>
+                        <th style="border-top:none;">數量</th>
+                        <th style="border-top:none;">搬運方式／尺寸重量</th>
+                        <th style="border-top:none;">備註</th>
+                    </tr>
+                </thead>
+                <tbody id="p-items-tbody">
+                    <!-- 自動產生與原圖相同的 6 列 (若超過 6 項則自動延伸) -->
+                </tbody>
+            </table>
+
+            <!-- 第三部分：獨立的管理中心審查與簽名表 (欄寬比 24.4% : 25.6% : 24.4% : 25.6%) -->
+            <table class="orig-table review-table">
+                <colgroup>
+                    <col style="width: 24.4%;">
+                    <col style="width: 25.6%;">
+                    <col style="width: 24.4%;">
+                    <col style="width: 25.6%;">
+                </colgroup>
+                <tr class="review-header-row">
+                    <td style="font-weight:bold;">管理中心審查</td>
+                    <td style="font-weight:normal;">
+                        <span class="sq-box"></span><span style="margin-right:10px;">核准</span>
+                        <span class="sq-box"></span><span>補正</span>
+                    </td>
+                    <td style="font-weight:bold;">申請人簽名</td>
+                    <td></td>
+                </tr>
+                <tr class="review-body-row">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align:center; padding:2px;">
+                        <img id="p-sig-img" style="max-height: 50px; max-width: 175px; display: none;" />
+                    </td>
+                </tr>
+            </table>
+
+            <div class="p-page-num">22</div>
+        </div>
+    </div>
+</div>
+
+<!-- 結果彈出視窗 -->
+<div id="result-modal">
+    <div class="modal-tip">👇 手機請「長按下方圖片」儲存或直接分享至 LINE！電腦請按右鍵另存圖片</div>
+    <br>
+    <img id="generated-img" src="" alt="產生的申請表">
+    <br>
+    <button class="close-modal" onclick="document.getElementById('result-modal').style.display='none'">返回修改</button>
+</div>
+
+<script>
+    // 1. 預計時段邏輯 (半小時為單位，嚴格限制於 09:00-12:00 及 13:00-17:00)
+    const amSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
+    const pmSlots = ["13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
+
+    function updateTimeOptions() {
+        const period = document.getElementById('periodType').value;
+        const startSel = document.getElementById('startTime');
+        startSel.innerHTML = '';
+
+        let validStarts = (period === 'AM' || period === 'FULL') ? amSlots.slice(0, -1) : pmSlots.slice(0, -1);
+        validStarts.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t; opt.innerText = t;
+            startSel.appendChild(opt);
+        });
+        updateEndTimeOptions();
+    }
+
+    function updateEndTimeOptions() {
+        const period = document.getElementById('periodType').value;
+        const startVal = document.getElementById('startTime').value;
+        const endSel = document.getElementById('endTime');
+        endSel.innerHTML = '';
+
+        let validEnds = [];
+        if (period === 'AM') {
+            validEnds = amSlots.slice(amSlots.indexOf(startVal) + 1);
+        } else if (period === 'PM') {
+            validEnds = pmSlots.slice(pmSlots.indexOf(startVal) + 1);
+        } else {
+            validEnds = pmSlots.slice(1);
+        }
+
+        validEnds.forEach((t, index) => {
+            const opt = document.createElement('option');
+            opt.value = t; opt.innerText = t;
+            if (index === validEnds.length - 1) opt.selected = true;
+            endSel.appendChild(opt);
+        });
+        renderPreview();
+    }
+
+    // 2. 日期預設與防呆檢查
+    const today = new Date();
+    document.getElementById('applyDate').valueAsDate = today;
+    const after3Days = new Date();
+    after3Days.setDate(today.getDate() + 3);
+    if (after3Days.getDay() === 6) after3Days.setDate(after3Days.getDate() + 2);
+    if (after3Days.getDay() === 0) after3Days.setDate(after3Days.getDate() + 1);
+    document.getElementById('entryDate').valueAsDate = after3Days;
+
+    function checkEntryDate() {
+        const applyD = new Date(document.getElementById('applyDate').value);
+        const entryD = new Date(document.getElementById('entryDate').value);
+        const day = entryD.getDay();
+        const diffDays = Math.ceil((entryD - applyD) / (1000 * 60 * 60 * 24));
+        if (day === 0 || day === 6) {
+            alert("⚠️ 提醒您：所選的進料日期為週末假日，依規定假日全面禁止進料喔！");
+        } else if (diffDays < 3) {
+            alert("⚠️ 提醒您：依規定進料需至少「提前三日」申請！");
+        }
+    }
+
+    // 3. 現場監工連動
+    function updateSupervisor() {
+        const sel = document.getElementById('supervisorSelect');
+        const customInput = document.getElementById('supervisorCustom');
+        const phoneInput = document.getElementById('phone');
+        if (sel.value === 'custom') {
+            customInput.style.display = 'block';
+            phoneInput.value = '';
+        } else {
+            customInput.style.display = 'none';
+            phoneInput.value = sel.options[sel.selectedIndex].getAttribute('data-phone') || '';
+        }
+    }
+
+    // 4. 動態材料項目 (原圖標準為 6 列)
+    let itemCount = 0;
+    const DEFAULT_ROWS = 6;
+    function addItem() {
+        if (itemCount >= 10) { alert("最多可新增 10 項材料！"); return; }
+        itemCount++;
+        const div = document.createElement('div');
+        div.className = 'item-box';
+        div.innerHTML = `
+            <h4>項目 #${itemCount}</h4>
+            ${itemCount > 1 ? '<button type="button" class="remove-btn" onclick="this.parentElement.remove(); itemCount--; renderPreview();">刪除</button>' : ''}
+            <div class="form-row">
+                <div class="form-group" style="flex:2;"><input type="text" class="i-name" placeholder="材料/機具名稱 (例: 矽酸鈣板)" oninput="renderPreview()"></div>
+                <div class="form-group" style="flex:1;"><input type="text" class="i-qty" placeholder="數量 (例: 50片)" oninput="renderPreview()"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><input type="text" class="i-method" placeholder="搬運方式/尺寸重量 (例: 推車進貨梯)" oninput="renderPreview()"></div>
+                <div class="form-group"><input type="text" class="i-note" placeholder="備註 (選填)" oninput="renderPreview()"></div>
+            </div>
+        `;
+        document.getElementById('items-container').appendChild(div);
+        renderPreview();
+    }
+
+    // 5. 手寫簽名板
+    const canvas = document.getElementById('sig-canvas');
+    const signaturePad = new SignaturePad(canvas, { penColor: "rgb(0, 0, 0)" });
+    signaturePad.addEventListener("endStroke", () => renderPreview());
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    function clearSig() { signaturePad.clear(); renderPreview(); }
+
+    // 6. 即時渲染 1:1 預覽畫面
+    function splitDate(dateStr) {
+        if (!dateStr) return ['', '', ''];
+        return dateStr.split('-');
+    }
+
+    function renderPreview() {
+        const [ay, am, ad] = splitDate(document.getElementById('applyDate').value);
+        document.getElementById('p-ay').innerText = ay;
+        document.getElementById('p-am').innerText = am;
+        document.getElementById('p-ad').innerText = ad;
+
+        const [ey, em, ed] = splitDate(document.getElementById('entryDate').value);
+        document.getElementById('p-ey').innerText = ey;
+        document.getElementById('p-em').innerText = em;
+        document.getElementById('p-ed').innerText = ed;
+
+        document.getElementById('p-building').innerText = document.getElementById('building').value;
+        document.getElementById('p-floor').innerText = document.getElementById('floor').value;
+        document.getElementById('p-contractor').innerText = document.getElementById('contractor').value;
+
+        const sel = document.getElementById('supervisorSelect');
+        const supName = (sel.value === 'custom') ? document.getElementById('supervisorCustom').value : sel.value;
+        document.getElementById('p-supervisor').innerText = supName;
+        document.getElementById('p-phone').innerText = document.getElementById('phone').value;
+        document.getElementById('p-vehicle').innerText = document.getElementById('vehicle').value;
+
+        // 預計時段勾選與起迄時間
+        const period = document.getElementById('periodType').value;
+        const st = document.getElementById('startTime').value;
+        const et = document.getElementById('endTime').value;
+        const chkAm = document.getElementById('p-chk-am');
+        const chkPm = document.getElementById('p-chk-pm');
+        
+        if (period === 'AM' || period === 'FULL') chkAm.classList.add('checked');
+        else chkAm.classList.remove('checked');
+
+        if (period === 'PM' || period === 'FULL') chkPm.classList.add('checked');
+        else chkPm.classList.remove('checked');
+
+        document.getElementById('p-time-range').innerText = `(${st}-${et})`;
+
+        // 渲染材料清單 (固定維持原圖 6 列，若填超過 6 項則自動擴充)
+        const names = document.querySelectorAll('.i-name');
+        const qtys = document.querySelectorAll('.i-qty');
+        const methods = document.querySelectorAll('.i-method');
+        const notes = document.querySelectorAll('.i-note');
+
+        const totalRows = Math.max(DEFAULT_ROWS, names.length);
+        let tbodyHtml = '';
+        for (let i = 0; i < totalRows; i++) {
+            const n = names[i] ? names[i].value : '';
+            const q = qtys[i] ? qtys[i].value : '';
+            const m = methods[i] ? methods[i].value : '';
+            const no = notes[i] ? notes[i].value : '';
+            tbodyHtml += `
+                <tr class="mat-data-row">
+                    <td>${n}</td>
+                    <td style="text-align:center;">${q}</td>
+                    <td>${m}</td>
+                    <td>${no}</td>
+                </tr>
+            `;
+        }
+        document.getElementById('p-items-tbody').innerHTML = tbodyHtml;
+
+        // 簽名圖檔 (放置於右下角白色簽名格內)
+        const sigImg = document.getElementById('p-sig-img');
+        if (!signaturePad.isEmpty()) {
+            sigImg.src = signaturePad.toDataURL();
+            sigImg.style.display = 'inline-block';
+        } else {
+            sigImg.style.display = 'none';
+        }
+    }
+
+    // 7. 產生最終高畫質 A4 圖片
+    function generateImage() {
+        renderPreview();
+        const printArea = document.getElementById('print-area');
+        html2canvas(printArea, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+            document.getElementById('generated-img').src = canvas.toDataURL("image/jpeg", 0.95);
+            document.getElementById('result-modal').style.display = 'block';
+        });
+    }
+
+    // 初始化啟動
+    window.addEventListener('DOMContentLoaded', () => {
+        addItem();
+        addItem();
+        updateTimeOptions();
+        renderPreview();
+    });
+</script>
+</body>
+</html>
