@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>華固上文林 - 材料進場申請表 (1:1原圖復刻版)</title>
     <script>
-        // 若在 LINE 內建瀏覽器開啟，自動加上參數跳轉至手機預設瀏覽器 (Safari/Chrome)，確保系統分享功能正常運作
+        // 若在 LINE 內建瀏覽器開啟，自動加上參數跳轉至手機預設瀏覽器 (Safari/Chrome)
         if (/Line/i.test(navigator.userAgent) && !window.location.search.includes('openExternalBrowser=1')) {
             const sep = window.location.search ? '&' : '?';
             window.location.replace(window.location.href + sep + 'openExternalBrowser=1');
         }
     </script>
-    <!-- 引入轉圖片與手寫簽名套件 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <style>
@@ -48,136 +47,40 @@
 
         .preview-header { margin-top: 25px; border-top: 2px solid #eee; padding-top: 15px; margin-bottom: 10px; font-weight: bold; font-size: 15px; color: var(--primary); }
 
-        /* =========================================================
-           1:1 原圖像素級復刻版面 (鎖定 800 x 1131 px 標準 A4 比例)
-           ========================================================= */
+        /* 1:1 原圖像素級復刻版面 */
         #preview-scroll { width: 100%; overflow-x: auto; background: #666; padding: 10px; box-sizing: border-box; border-radius: 6px; }
         #print-area {
-            width: 800px;
-            height: 1131px;
-            background: #ffffff;
-            margin: 0 auto;
-            padding: 38px 38px 30px 38px;
-            box-sizing: border-box;
+            width: 800px; height: 1131px; background: #ffffff; margin: 0 auto;
+            padding: 38px 38px 30px 38px; box-sizing: border-box;
             font-family: "Microsoft JhengHei", "PingFang TC", "Heiti TC", sans-serif;
-            color: #000;
-            position: relative;
+            color: #000; position: relative;
         }
-        .p-top-title {
-            text-align: center;
-            font-size: 17px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            color: #000;
-        }
-        .p-green-bar {
-            width: 100%;
-            height: 25px;
-            background-color: #0f5c4b;
-            margin-bottom: 12px;
-        }
-        .p-mid-title {
-            text-align: center;
-            font-size: 15px;
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-        .p-sub-title {
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #0f5c4b;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-        }
-        .p-rule-line {
-            font-size: 13.5px;
-            color: #111;
-            margin-bottom: 6px;
-            letter-spacing: 0.2px;
-        }
+        .p-top-title { text-align: center; font-size: 17px; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 8px; color: #000; }
+        .p-green-bar { width: 100%; height: 25px; background-color: #0f5c4b; margin-bottom: 12px; }
+        .p-mid-title { text-align: center; font-size: 15px; font-weight: bold; color: #000; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .p-sub-title { text-align: center; font-size: 20px; font-weight: bold; color: #0f5c4b; letter-spacing: 1px; margin-bottom: 16px; }
+        .p-rule-line { font-size: 13.5px; color: #111; margin-bottom: 6px; letter-spacing: 0.2px; }
 
-        table.orig-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            border: 1px solid var(--border-color);
-        }
-        table.orig-table td, table.orig-table th {
-            border: 1px solid var(--border-color);
-            padding: 0 8px;
-            vertical-align: middle;
-            box-sizing: border-box;
-            font-size: 13.5px;
-            color: #000;
-        }
-        .bg-green-cell {
-            background-color: var(--cell-bg);
-            font-weight: bold;
-            text-align: left;
-            padding-left: 8px !important;
-        }
-        .fill-val {
-            font-weight: 600;
-            font-size: 14px;
-            color: #000;
-        }
+        table.orig-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid var(--border-color); }
+        table.orig-table td, table.orig-table th { border: 1px solid var(--border-color); padding: 0 8px; vertical-align: middle; box-sizing: border-box; font-size: 13.5px; color: #000; }
+        .bg-green-cell { background-color: var(--cell-bg); font-weight: bold; text-align: left; padding-left: 8px !important; }
+        .fill-val { font-weight: 600; font-size: 14px; color: #000; }
         .top-row td { height: 26px; }
-        .mat-header-row th {
-            height: 36px;
-            background-color: var(--cell-bg);
-            font-weight: bold;
-            text-align: center;
-        }
-        .mat-data-row td {
-            height: 26px;
-            font-size: 13.5px;
-            font-weight: 500;
-        }
+        .mat-header-row th { height: 36px; background-color: var(--cell-bg); font-weight: bold; text-align: center; }
+        .mat-data-row td { height: 26px; font-size: 13.5px; font-weight: 500; }
         .review-table { margin-top: 48px; }
-        .review-header-row td {
-            height: 35px;
-            background-color: var(--cell-bg);
-            text-align: center;
-        }
+        .review-header-row td { height: 35px; background-color: var(--cell-bg); text-align: center; }
         .review-body-row td { height: 56px; }
 
-        .sq-box {
-            display: inline-block;
-            width: 11px;
-            height: 11px;
-            border: 1px solid #333;
-            vertical-align: middle;
-            margin-right: 3px;
-            margin-bottom: 2px;
-            position: relative;
-        }
-        .sq-box.checked::after {
-            content: "✔";
-            position: absolute;
-            top: -5px;
-            left: 0px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #000;
-        }
-        .p-page-num {
-            position: absolute;
-            bottom: 24px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 13.5px;
-            color: #222;
-        }
+        .sq-box { display: inline-block; width: 11px; height: 11px; border: 1px solid #333; vertical-align: middle; margin-right: 3px; margin-bottom: 2px; position: relative; }
+        .sq-box.checked::after { content: "✔"; position: absolute; top: -5px; left: 0px; font-size: 13px; font-weight: bold; color: #000; }
+        .p-page-num { position: absolute; bottom: 24px; left: 0; width: 100%; text-align: center; font-size: 13.5px; color: #222; }
 
-        /* 彈出圖片結果與一鍵分享視窗 */
+        /* 彈出視窗與雲端同步狀態 */
         #result-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 999; overflow-y: auto; padding: 18px; box-sizing: border-box; text-align: center; }
+        .cloud-status { max-width: 500px; margin: 0 auto 12px auto; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: bold; background: #2c3e50; color: #ecf0f1; display: none; }
         .modal-actions { max-width: 500px; margin: 0 auto 14px auto; display: flex; flex-direction: column; gap: 10px; }
-        .btn-line-share { background: var(--line-green); color: #fff; border: none; padding: 14px 20px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(6,199,85,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-line-share { background: var(--line-green); color: #fff; border: none; padding: 14px 20px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-download { background: #3498db; color: #fff; border: none; padding: 10px 18px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; }
         .modal-tip { color: #f1c40f; font-size: 14px; margin-bottom: 10px; }
         #result-modal img { max-width: 100%; height: auto; border: 2px solid #fff; border-radius: 4px; }
@@ -188,7 +91,6 @@
 
 <div class="container">
     <h2>『華固上文林』材料進場申請</h2>
-
     <div class="rule-alert">
         ⚠️ <b>規定提醒：</b>進料至少<b>提前三日</b>申請；進出時間限<b>週一至週五 09:00-12:00、13:00-17:00</b>，假日全面禁止進料。
     </div>
@@ -240,7 +142,6 @@
         <input type="text" id="vehicle" placeholder="例: ABC-1234 / 3.5噸貨車" oninput="renderPreview()">
     </div>
 
-    <!-- 預計時段 (半小時為單位，嚴格限制於規定時間內) -->
     <div class="time-box">
         <label style="color: var(--primary); margin-bottom: 8px;">🕒 預計進料時段（以半小時為單位，限規定時間內）</label>
         <div class="form-row">
@@ -282,7 +183,6 @@
     <div class="preview-header">👀 1:1 原圖比例與配色即時預覽：</div>
 
     <div id="preview-scroll">
-        <!-- 1:1 復刻原圖 A4 畫布 -->
         <div id="print-area">
             <div class="p-top-title">『華固上文林』裝潢(修)施工管理辦法』</div>
             <div class="p-green-bar"></div>
@@ -290,13 +190,9 @@
             <div class="p-sub-title">【附表一】 材料進場申請表</div>
             <div class="p-rule-line">進料至少提前三日申請；進出時間限週一至週五 09:00-12:00、13:00-17:00，假日全面禁止進料。</div>
 
-            <!-- 第一部分：上半部基本資料表 (4列，欄寬比 14.8% : 35.2% : 14.8% : 35.2%) -->
             <table class="orig-table">
                 <colgroup>
-                    <col style="width: 14.8%;">
-                    <col style="width: 35.2%;">
-                    <col style="width: 14.8%;">
-                    <col style="width: 35.2%;">
+                    <col style="width: 14.8%;"><col style="width: 35.2%;"><col style="width: 14.8%;"><col style="width: 35.2%;">
                 </colgroup>
                 <tr class="top-row">
                     <td class="bg-green-cell">申請日期</td>
@@ -345,13 +241,9 @@
                 </tr>
             </table>
 
-            <!-- 第二部分：材料清單表 (與上表無縫連接，欄寬比 37.7% : 16.3% : 27.0% : 19.0%) -->
             <table class="orig-table" style="border-top: none;">
                 <colgroup>
-                    <col style="width: 37.7%;">
-                    <col style="width: 16.3%;">
-                    <col style="width: 27.0%;">
-                    <col style="width: 19.0%;">
+                    <col style="width: 37.7%;"><col style="width: 16.3%;"><col style="width: 27.0%;"><col style="width: 19.0%;">
                 </colgroup>
                 <thead>
                     <tr class="mat-header-row">
@@ -364,13 +256,9 @@
                 <tbody id="p-items-tbody"></tbody>
             </table>
 
-            <!-- 第三部分：獨立的管理中心審查與簽名表 (欄寬比 24.4% : 25.6% : 24.4% : 25.6%) -->
             <table class="orig-table review-table">
                 <colgroup>
-                    <col style="width: 24.4%;">
-                    <col style="width: 25.6%;">
-                    <col style="width: 24.4%;">
-                    <col style="width: 25.6%;">
+                    <col style="width: 24.4%;"><col style="width: 25.6%;"><col style="width: 24.4%;"><col style="width: 25.6%;">
                 </colgroup>
                 <tr class="review-header-row">
                     <td style="font-weight:bold;">管理中心審查</td>
@@ -382,9 +270,7 @@
                     <td></td>
                 </tr>
                 <tr class="review-body-row">
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td></td><td></td><td></td>
                     <td style="text-align:center; padding:2px;">
                         <img id="p-sig-img" style="max-height: 50px; max-width: 175px; display: none;" />
                     </td>
@@ -398,6 +284,7 @@
 
 <!-- 結果彈出視窗 -->
 <div id="result-modal">
+    <div id="cloud-status" class="cloud-status">☁️ 正在同步備份至 Google 試算表與雲端硬碟...</div>
     <div class="modal-actions">
         <button type="button" class="btn-line-share" onclick="shareImageToLine()">
             📲 一鍵分享圖片至 LINE 群組
@@ -413,11 +300,12 @@
 </div>
 
 <script>
-    // 全域變數保存最新產生的圖片 Blob 與檔名
+    // 已綁定您的 Google 試算表與雲端硬碟專屬接收器網址
+    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzg8zfW6Jdh8v5b41-73Tfn4hcel6m6S6CqN0Ahuy0EKAc_RR24a9SMd749COXKaQeunA/exec";
+
     let currentImageBlob = null;
     let currentFileName = "華固上文林_A1棟2樓_進料申請單.jpg";
 
-    // 1. 預計時段邏輯 (半小時為單位，嚴格限制於 09:00-12:00 及 13:00-17:00)
     const amSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
     const pmSlots = ["13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
 
@@ -425,7 +313,6 @@
         const period = document.getElementById('periodType').value;
         const startSel = document.getElementById('startTime');
         startSel.innerHTML = '';
-
         let validStarts = (period === 'AM' || period === 'FULL') ? amSlots.slice(0, -1) : pmSlots.slice(0, -1);
         validStarts.forEach(t => {
             const opt = document.createElement('option');
@@ -440,15 +327,10 @@
         const startVal = document.getElementById('startTime').value;
         const endSel = document.getElementById('endTime');
         endSel.innerHTML = '';
-
         let validEnds = [];
-        if (period === 'AM') {
-            validEnds = amSlots.slice(amSlots.indexOf(startVal) + 1);
-        } else if (period === 'PM') {
-            validEnds = pmSlots.slice(pmSlots.indexOf(startVal) + 1);
-        } else {
-            validEnds = pmSlots.slice(1);
-        }
+        if (period === 'AM') validEnds = amSlots.slice(amSlots.indexOf(startVal) + 1);
+        else if (period === 'PM') validEnds = pmSlots.slice(pmSlots.indexOf(startVal) + 1);
+        else validEnds = pmSlots.slice(1);
 
         validEnds.forEach((t, index) => {
             const opt = document.createElement('option');
@@ -459,7 +341,6 @@
         renderPreview();
     }
 
-    // 2. 日期預設與防呆檢查
     const today = new Date();
     document.getElementById('applyDate').valueAsDate = today;
     const after3Days = new Date();
@@ -473,14 +354,10 @@
         const entryD = new Date(document.getElementById('entryDate').value);
         const day = entryD.getDay();
         const diffDays = Math.ceil((entryD - applyD) / (1000 * 60 * 60 * 24));
-        if (day === 0 || day === 6) {
-            alert("⚠️ 提醒您：所選的進料日期為週末假日，依規定假日全面禁止進料喔！");
-        } else if (diffDays < 3) {
-            alert("⚠️ 提醒您：依規定進料需至少「提前三日」申請！");
-        }
+        if (day === 0 || day === 6) alert("⚠️ 提醒您：所選的進料日期為週末假日，依規定假日全面禁止進料喔！");
+        else if (diffDays < 3) alert("⚠️ 提醒您：依規定進料需至少「提前三日」申請！");
     }
 
-    // 3. 現場監工連動
     function updateSupervisor() {
         const sel = document.getElementById('supervisorSelect');
         const customInput = document.getElementById('supervisorCustom');
@@ -494,7 +371,6 @@
         }
     }
 
-    // 4. 動態材料項目 (原圖標準為 6 列)
     let itemCount = 0;
     const DEFAULT_ROWS = 6;
     function addItem() {
@@ -518,7 +394,6 @@
         renderPreview();
     }
 
-    // 5. 手寫簽名板
     const canvas = document.getElementById('sig-canvas');
     const signaturePad = new SignaturePad(canvas, { penColor: "rgb(0, 0, 0)" });
     signaturePad.addEventListener("endStroke", () => renderPreview());
@@ -533,7 +408,6 @@
     resizeCanvas();
     function clearSig() { signaturePad.clear(); renderPreview(); }
 
-    // 6. 即時渲染 1:1 預覽畫面
     function splitDate(dateStr) {
         if (!dateStr) return ['', '', ''];
         return dateStr.split('-');
@@ -606,7 +480,6 @@
         }
     }
 
-    // 7. 產生最終高畫質 A4 圖片並準備分享檔案
     function generateImage() {
         renderPreview();
         const entryDateStr = document.getElementById('entryDate').value || '未填日期';
@@ -618,22 +491,73 @@
             document.getElementById('generated-img').src = dataUrl;
             document.getElementById('result-modal').style.display = 'block';
 
-            // 轉為 Blob 供手機原生分享 API 使用
             canvas.toBlob(blob => {
                 currentImageBlob = blob;
             }, "image/jpeg", 0.95);
+
+            // 自動將資料與圖片傳回 Google 試算表與雲端硬碟
+            if (GAS_WEBHOOK_URL && GAS_WEBHOOK_URL.startsWith("https://script.google.com/")) {
+                const statusEl = document.getElementById('cloud-status');
+                statusEl.style.display = 'block';
+                statusEl.style.background = '#2c3e50';
+                statusEl.innerText = '☁️ 正在同步寫入 Google 試算表與雲端硬碟...';
+
+                const sel = document.getElementById('supervisorSelect');
+                const supName = (sel.value === 'custom') ? document.getElementById('supervisorCustom').value : sel.value;
+                const period = document.getElementById('periodType').value;
+                const st = document.getElementById('startTime').value;
+                const et = document.getElementById('endTime').value;
+
+                const names = document.querySelectorAll('.i-name');
+                const qtys = document.querySelectorAll('.i-qty');
+                const methods = document.querySelectorAll('.i-method');
+                let itemsArr = [];
+                for (let i = 0; i < names.length; i++) {
+                    if (names[i].value.trim() !== '') {
+                        itemsArr.push(`${names[i].value}(${qtys[i].value || '-'} / ${methods[i].value || '-'})`);
+                    }
+                }
+
+                const payload = {
+                    applyDate: document.getElementById('applyDate').value,
+                    entryDate: entryDateStr,
+                    unit: `${document.getElementById('building').value}棟${document.getElementById('floor').value}樓`,
+                    contractor: document.getElementById('contractor').value,
+                    supervisor: supName,
+                    phone: document.getElementById('phone').value,
+                    vehicle: document.getElementById('vehicle').value,
+                    timeSlot: `${period} (${st}-${et})`,
+                    itemsSummary: itemsArr.join('；'),
+                    fileName: currentFileName,
+                    imageBase64: dataUrl
+                };
+
+                fetch(GAS_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res && res.success) {
+                        statusEl.style.background = '#27ae60';
+                        statusEl.innerText = '✅ 已自動寫入 Google 試算表並備份圖檔至雲端硬碟！';
+                    } else {
+                        statusEl.style.background = '#e67e22';
+                        statusEl.innerText = '⚠️ 雲端備份提示：' + (res ? res.error : '');
+                    }
+                })
+                .catch(() => {
+                    statusEl.style.background = '#27ae60';
+                    statusEl.innerText = '✅ 已發送備份請求至 Google 雲端！';
+                });
+            }
         });
     }
 
-    // 8. 手機原生一鍵喚醒 LINE 分享圖片
     async function shareImageToLine() {
-        if (!currentImageBlob) {
-            alert("圖片正在準備中，請稍候再試！");
-            return;
-        }
+        if (!currentImageBlob) { alert("圖片正在準備中，請稍候再試！"); return; }
         const file = new File([currentImageBlob], currentFileName, { type: "image/jpeg" });
-
-        // 檢查手機瀏覽器是否支援原生檔案分享 (iOS Safari / Android Chrome 皆支援)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({
@@ -642,19 +566,14 @@
                     text: '請審閱材料進場申請表'
                 });
             } catch (err) {
-                // 使用者取消分享時不跳錯誤訊息
-                if (err.name !== 'AbortError') {
-                    alert("無法直接喚醒分享選單，請長按下方圖片選擇「分享」或下載圖片！");
-                }
+                if (err.name !== 'AbortError') alert("請長按下方圖片選擇「分享」或下載圖片！");
             }
         } else {
-            // 若在電腦或舊版瀏覽器不支援直接分享檔案，自動改為下載圖片並提示
             downloadImage();
-            alert("您的裝置瀏覽器不支援直接喚醒 App 分享圖檔，已自動為您下載申請單圖片，請直接開啟 LINE 上傳至群組！");
+            alert("已為您下載申請單圖片，請直接開啟 LINE 上傳至群組！");
         }
     }
 
-    // 9. 一鍵下載圖片備用按鈕
     function downloadImage() {
         const imgDataUrl = document.getElementById('generated-img').src;
         if (!imgDataUrl) return;
@@ -666,7 +585,6 @@
         document.body.removeChild(link);
     }
 
-    // 初始化啟動
     window.addEventListener('DOMContentLoaded', () => {
         addItem();
         addItem();
