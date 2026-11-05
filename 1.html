@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>華固上文林 - 材料進場申請表 (1:1原圖復刻版)</title>
+    <script>
+        // 若在 LINE 內建瀏覽器開啟，自動加上參數跳轉至手機預設瀏覽器 (Safari/Chrome)，確保系統分享功能正常運作
+        if (/Line/i.test(navigator.userAgent) && !window.location.search.includes('openExternalBrowser=1')) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.replace(window.location.href + sep + 'openExternalBrowser=1');
+        }
+    </script>
     <!-- 引入轉圖片與手寫簽名套件 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
@@ -12,6 +19,7 @@
             --primary: #0f5c4b; 
             --cell-bg: #d5e6e1; 
             --border-color: #333333;
+            --line-green: #06C755;
         }
         body { font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; background: #f0f3f5; margin: 0; padding: 15px; color: #333; }
         .container { max-width: 620px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -30,7 +38,7 @@
         .item-box h4 { margin: 0 0 8px 0; font-size: 14px; color: var(--primary); }
         .remove-btn { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 3px 8px; cursor: pointer; font-size: 12px; }
         
-        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; margin-top: 10px; }
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; margin-top: 10px; box-sizing: border-box; }
         .btn-add { background: #ecf0f1; color: #2c3e50; border: 1px dashed #bdc3c7; }
         .btn-primary { background: var(--primary); color: white; margin-top: 20px; font-size: 18px; box-shadow: 0 3px 6px rgba(15,92,75,0.3); }
         
@@ -55,7 +63,6 @@
             color: #000;
             position: relative;
         }
-        /* 頂部標題與深綠色橫條 */
         .p-top-title {
             text-align: center;
             font-size: 17px;
@@ -93,7 +100,6 @@
             letter-spacing: 0.2px;
         }
 
-        /* 表格共用設定 */
         table.orig-table {
             width: 100%;
             border-collapse: collapse;
@@ -108,32 +114,18 @@
             font-size: 13.5px;
             color: #000;
         }
-        /* 淺灰綠標題格 */
         .bg-green-cell {
             background-color: var(--cell-bg);
             font-weight: bold;
             text-align: left;
             padding-left: 8px !important;
         }
-        .bg-green-center {
-            background-color: var(--cell-bg);
-            font-weight: bold;
-            text-align: center;
-        }
-
-        /* 填寫內容字體 */
         .fill-val {
             font-weight: 600;
             font-size: 14px;
             color: #000;
         }
-
-        /* 上半部 4 列高度 (精準對應原圖 26px) */
-        .top-row td {
-            height: 26px;
-        }
-
-        /* 材料清單表頭高度 (36px) 與 6 列資料列高度 (26px) */
+        .top-row td { height: 26px; }
         .mat-header-row th {
             height: 36px;
             background-color: var(--cell-bg);
@@ -145,21 +137,14 @@
             font-size: 13.5px;
             font-weight: 500;
         }
-
-        /* 獨立的底部管理中心審查表 (與上方間隔 48px) */
-        .review-table {
-            margin-top: 48px;
-        }
+        .review-table { margin-top: 48px; }
         .review-header-row td {
             height: 35px;
             background-color: var(--cell-bg);
             text-align: center;
         }
-        .review-body-row td {
-            height: 56px;
-        }
+        .review-body-row td { height: 56px; }
 
-        /* 方形勾選框 */
         .sq-box {
             display: inline-block;
             width: 11px;
@@ -179,8 +164,6 @@
             font-weight: bold;
             color: #000;
         }
-
-        /* 底部頁碼 22 */
         .p-page-num {
             position: absolute;
             bottom: 24px;
@@ -191,17 +174,20 @@
             color: #222;
         }
 
-        /* 彈出圖片結果視窗 */
-        #result-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.88); z-index: 999; overflow-y: auto; padding: 20px; box-sizing: border-box; text-align: center; }
+        /* 彈出圖片結果與一鍵分享視窗 */
+        #result-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 999; overflow-y: auto; padding: 18px; box-sizing: border-box; text-align: center; }
+        .modal-actions { max-width: 500px; margin: 0 auto 14px auto; display: flex; flex-direction: column; gap: 10px; }
+        .btn-line-share { background: var(--line-green); color: #fff; border: none; padding: 14px 20px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(6,199,85,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-download { background: #3498db; color: #fff; border: none; padding: 10px 18px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .modal-tip { color: #f1c40f; font-size: 14px; margin-bottom: 10px; }
         #result-modal img { max-width: 100%; height: auto; border: 2px solid #fff; border-radius: 4px; }
-        .modal-tip { color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 12px; background: #e67e22; display: inline-block; padding: 6px 15px; border-radius: 20px; }
-        .close-modal { background: #e74c3c; color: white; border: none; padding: 10px 25px; font-size: 16px; border-radius: 6px; margin-top: 15px; cursor: pointer; font-weight: bold; }
+        .close-modal { background: #e74c3c; color: white; border: none; padding: 10px 30px; font-size: 16px; border-radius: 6px; margin-top: 15px; margin-bottom: 30px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>『 華固上文林 』材料進場申請</h2>
+    <h2>『華固上文林』材料進場申請</h2>
 
     <div class="rule-alert">
         ⚠️ <b>規定提醒：</b>進料至少<b>提前三日</b>申請；進出時間限<b>週一至週五 09:00-12:00、13:00-17:00</b>，假日全面禁止進料。
@@ -291,7 +277,7 @@
         </div>
     </div>
 
-    <button type="button" class="btn btn-primary" onclick="generateImage()">📸 產生申請單圖片 (傳送至 LINE)</button>
+    <button type="button" class="btn btn-primary" onclick="generateImage()">📸 產生申請單圖片並傳送至 LINE</button>
 
     <div class="preview-header">👀 1:1 原圖比例與配色即時預覽：</div>
 
@@ -375,9 +361,7 @@
                         <th style="border-top:none;">備註</th>
                     </tr>
                 </thead>
-                <tbody id="p-items-tbody">
-                    <!-- 自動產生與原圖相同的 6 列 (若超過 6 項則自動延伸) -->
-                </tbody>
+                <tbody id="p-items-tbody"></tbody>
             </table>
 
             <!-- 第三部分：獨立的管理中心審查與簽名表 (欄寬比 24.4% : 25.6% : 24.4% : 25.6%) -->
@@ -414,14 +398,25 @@
 
 <!-- 結果彈出視窗 -->
 <div id="result-modal">
-    <div class="modal-tip">👇 手機請「長按下方圖片」儲存或直接分享至 LINE！電腦請按右鍵另存圖片</div>
-    <br>
+    <div class="modal-actions">
+        <button type="button" class="btn-line-share" onclick="shareImageToLine()">
+            📲 一鍵分享圖片至 LINE 群組
+        </button>
+        <button type="button" class="btn-download" onclick="downloadImage()">
+            💾 下載圖片至手機 / 電腦
+        </button>
+    </div>
+    <div class="modal-tip">💡 若點擊上方按鈕無反應，請直接「長按下方圖片」選擇分享或儲存圖片</div>
     <img id="generated-img" src="" alt="產生的申請表">
     <br>
-    <button class="close-modal" onclick="document.getElementById('result-modal').style.display='none'">返回修改</button>
+    <button class="close-modal" onclick="document.getElementById('result-modal').style.display='none'">返回修改內容</button>
 </div>
 
 <script>
+    // 全域變數保存最新產生的圖片 Blob 與檔名
+    let currentImageBlob = null;
+    let currentFileName = "華固上文林_A1棟2樓_進料申請單.jpg";
+
     // 1. 預計時段邏輯 (半小時為單位，嚴格限制於 09:00-12:00 及 13:00-17:00)
     const amSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
     const pmSlots = ["13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
@@ -565,7 +560,6 @@
         document.getElementById('p-phone').innerText = document.getElementById('phone').value;
         document.getElementById('p-vehicle').innerText = document.getElementById('vehicle').value;
 
-        // 預計時段勾選與起迄時間
         const period = document.getElementById('periodType').value;
         const st = document.getElementById('startTime').value;
         const et = document.getElementById('endTime').value;
@@ -580,7 +574,6 @@
 
         document.getElementById('p-time-range').innerText = `(${st}-${et})`;
 
-        // 渲染材料清單 (固定維持原圖 6 列，若填超過 6 項則自動擴充)
         const names = document.querySelectorAll('.i-name');
         const qtys = document.querySelectorAll('.i-qty');
         const methods = document.querySelectorAll('.i-method');
@@ -604,7 +597,6 @@
         }
         document.getElementById('p-items-tbody').innerHTML = tbodyHtml;
 
-        // 簽名圖檔 (放置於右下角白色簽名格內)
         const sigImg = document.getElementById('p-sig-img');
         if (!signaturePad.isEmpty()) {
             sigImg.src = signaturePad.toDataURL();
@@ -614,14 +606,64 @@
         }
     }
 
-    // 7. 產生最終高畫質 A4 圖片
+    // 7. 產生最終高畫質 A4 圖片並準備分享檔案
     function generateImage() {
         renderPreview();
+        const entryDateStr = document.getElementById('entryDate').value || '未填日期';
+        currentFileName = `華固上文林_A1棟2樓_進料申請_${entryDateStr}.jpg`;
+
         const printArea = document.getElementById('print-area');
         html2canvas(printArea, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
-            document.getElementById('generated-img').src = canvas.toDataURL("image/jpeg", 0.95);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+            document.getElementById('generated-img').src = dataUrl;
             document.getElementById('result-modal').style.display = 'block';
+
+            // 轉為 Blob 供手機原生分享 API 使用
+            canvas.toBlob(blob => {
+                currentImageBlob = blob;
+            }, "image/jpeg", 0.95);
         });
+    }
+
+    // 8. 手機原生一鍵喚醒 LINE 分享圖片
+    async function shareImageToLine() {
+        if (!currentImageBlob) {
+            alert("圖片正在準備中，請稍候再試！");
+            return;
+        }
+        const file = new File([currentImageBlob], currentFileName, { type: "image/jpeg" });
+
+        // 檢查手機瀏覽器是否支援原生檔案分享 (iOS Safari / Android Chrome 皆支援)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: '華固上文林 A1棟2樓 材料進場申請表',
+                    text: '請審閱材料進場申請表'
+                });
+            } catch (err) {
+                // 使用者取消分享時不跳錯誤訊息
+                if (err.name !== 'AbortError') {
+                    alert("無法直接喚醒分享選單，請長按下方圖片選擇「分享」或下載圖片！");
+                }
+            }
+        } else {
+            // 若在電腦或舊版瀏覽器不支援直接分享檔案，自動改為下載圖片並提示
+            downloadImage();
+            alert("您的裝置瀏覽器不支援直接喚醒 App 分享圖檔，已自動為您下載申請單圖片，請直接開啟 LINE 上傳至群組！");
+        }
+    }
+
+    // 9. 一鍵下載圖片備用按鈕
+    function downloadImage() {
+        const imgDataUrl = document.getElementById('generated-img').src;
+        if (!imgDataUrl) return;
+        const link = document.createElement('a');
+        link.href = imgDataUrl;
+        link.download = currentFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     // 初始化啟動
